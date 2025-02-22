@@ -84,23 +84,26 @@ namespace GameOfLife.API.Tests.HelpersTests
             Assert.Equal(expectedState, result);
         }
 
+        [Theory]
+        [MemberData(nameof(BoardAfterIterationsData))]
+        public void GetBoardAfterNIterations_ShouldComputeCorrectFinalState(List<List<bool>> initialState, int rows, int cols, int iterations, List<List<bool>> expectedFinalState)
+        {
+            // Arrange
+            var board = new Board { Rows = rows, Columns = cols, State = initialState };
+
+            var expectedFinalStateHash = BoardHelper.ComputeStateHash(BoardHelper.ConvertToBinary(expectedFinalState));
+
+            // Act
+            var finalState = BoardHelper.GetBoardAfterNIterations(board, rows, cols, iterations, out var resultStateHash);
+
+            // Assert
+            Assert.Equal(expectedFinalState, finalState);
+            Assert.Equal(expectedFinalStateHash, resultStateHash);
+        }
+
         public static IEnumerable<object[]> BoardStateData()
         {
-            var gliderPattern_10x10 =
-                new List<List<bool>>
-                {
-                    new() { false, false, false, false, false, false, false, false, false, false },
-                    new() { false, false, false, false, false, false, false, false, false, false },
-                    new() { false, false, true,  false, false, false, false, false, false, false },
-                    new() { false, false, false, true,  false, false, false, false, false, false },
-                    new() { false, true,  true,  true,  false, false, false, false, false, false },
-                    new() { false, false, false, false, false, false, false, false, false, false },
-                    new() { false, false, false, false, false, false, false, false, false, false },
-                    new() { false, false, false, false, false, false, false, false, false, false },
-                    new() { false, false, false, false, false, false, false, false, false, false },
-                    new() { false, false, false, false, false, false, false, false, false, false }
-                };
-
+            var gliderPattern_10x10 = Generate10x10GliderPattern();
             var random_50x50 = GenerateRandomBoard(50, 50, 0.5);
             var checkerboard_100x100 = GenerateCheckerboardBoard(100, 100);
             var allAlive_200x200 = GenerateAllAliveBoard(200, 200);
@@ -172,6 +175,72 @@ namespace GameOfLife.API.Tests.HelpersTests
                     new() { false, false, false, false, false }
                 },
                 0, 0, 5, 5, 3
+            };
+        }
+
+        private static List<List<bool>> Generate10x10GliderPattern()
+        {
+            return new List<List<bool>>
+            {
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, true,  false, false, false, false, false, false, false },
+                new() { false, false, false, true,  false, false, false, false, false, false },
+                new() { false, true,  true,  true,  false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false }
+            };
+        }
+
+        public static IEnumerable<object[]> BoardAfterIterationsData()
+        {
+            List<List<bool>> gliderPattern_10x10 = Generate10x10GliderPattern();
+
+            var random_50x50 = GenerateRandomBoard(50, 50, 0.5);
+            var checkerboard_100x100 = GenerateCheckerboardBoard(100, 100);
+            var allAlive_200x200 = GenerateAllAliveBoard(200, 200);
+
+            yield return new object[]
+            {
+                // 1x1 board, single dead cell should remain dead after any iterations
+                new List<List<bool>> { new() { false } },
+                1, 1, 5, // 5 iterations
+                new List<List<bool>> { new() { false } }
+            };
+
+            yield return new object[]
+            {
+                // 10x10 Glider pattern after 5 iterations
+                gliderPattern_10x10,
+                10, 10, 5,
+                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 10, Columns = 10, State = gliderPattern_10x10 }, 10, 10, 5, out _)
+            };
+
+            yield return new object[]
+            {
+                // 50x50 random board after 10 iterations
+                random_50x50,
+                50, 50, 10,
+                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 50, Columns = 50, State = random_50x50 }, 50, 50, 10, out _)
+            };
+
+            yield return new object[]
+            {
+                // 100x100 Checkerboard pattern after 2 iterations
+                checkerboard_100x100,
+                100, 100, 2,
+                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 100, Columns = 100, State = checkerboard_100x100 }, 100, 100, 2, out _)
+            };
+
+            yield return new object[]
+            {
+                // 200x200 All Alive Board after 3 iterations
+                allAlive_200x200,
+                200, 200, 3,
+                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 200, Columns = 200, State = allAlive_200x200 }, 200, 200, 3, out _)
             };
         }
 

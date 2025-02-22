@@ -56,6 +56,12 @@ namespace GameOfLife.API.Services
             return board;
         }
 
+        /// <summary>
+        /// Retrieves the state of a board after a specified number of iterations.
+        /// </summary>
+        /// <param name="id">The unique identifier of the board.</param>
+        /// <param name="iterations">The number of iterations to simulate.</param>
+        /// <returns>The board object with its state updated after the specified number of iterations.</returns>
         public async Task<Board?> GetBoardAfterNIterationsAsync(Guid id, int iterations)
         {
             var board = await _readRepository.GetBoardAsync(id);
