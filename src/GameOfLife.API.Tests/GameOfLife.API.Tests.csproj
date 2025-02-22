@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="ControllersTests\Payloads\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="3.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
     <PackageReference Include="NSubstitute" Version="5.3.0" />
@@ -22,15 +28,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ExtensionsTests\" />
-    <Folder Include="HelpersTests\" />
-    <Folder Include="ModelsTests\" />
     <Folder Include="ServicesTests\" />
-    <Folder Include="RepositoriesTests\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GameOfLife.API\GameOfLife.API.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

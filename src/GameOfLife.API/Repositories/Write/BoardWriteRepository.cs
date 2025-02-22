@@ -11,20 +11,17 @@ namespace GameOfLife.API.Repositories.Write
     public class BoardWriteRepository : IBoardWriteRepository
     {
         private readonly string _connectionString;
-
         private const string InsertBoardSql = "sp_insertBoardState";
 
         public BoardWriteRepository(IOptions<AppSettings> settings)
         {
-            _connectionString = ConfigurationHelpers.ReadDockerSecretFileAsString(settings.Value.DockerSecretPaths.BoardWriteConnectionString);
+            _connectionString = ConfigurationHelper.ReadDockerSecretFileAsString(settings.Value.DockerSecretPaths.BoardWriteConnectionString);
         }
 
         public async Task<Guid> InsertBoardAsync(Board board)
         {
             using var connection = new SqlConnection(_connectionString);
             connection.Open();
-
-            Console.WriteLine("Randomly generated Board Id by the code is: {0}", board.Id);
 
             var parameters = new DynamicParameters();
             parameters.Add("@Rows", board.Rows, DbType.Int32);
@@ -36,8 +33,6 @@ namespace GameOfLife.API.Repositories.Write
             await connection.ExecuteAsync(InsertBoardSql, parameters, commandType: CommandType.StoredProcedure);
 
             board.Id = parameters.Get<Guid>("@Id");
-
-            Console.WriteLine("Randomly generated Board Id by the database is: {0}", board.Id);
 
             return board.Id;
         }

@@ -1,6 +1,6 @@
 ﻿namespace GameOfLife.API.Helpers
 {
-    public static class ConfigurationHelpers
+    public static class ConfigurationHelper
     {
         public static string ReadDockerSecretFileAsString(string path)
         {

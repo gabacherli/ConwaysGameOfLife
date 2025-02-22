@@ -15,8 +15,8 @@ namespace GameOfLife.API.Extensions
         public static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<IBoardService, BoardService>();
-            services.AddScoped<IBoardReadRepository, BoardReadRepository>();
-            services.AddScoped<IBoardWriteRepository, BoardWriteRepository>();
+            services.AddTransient<IBoardReadRepository, BoardReadRepository>();
+            services.AddTransient<IBoardWriteRepository, BoardWriteRepository>();
         }
     }
 }
