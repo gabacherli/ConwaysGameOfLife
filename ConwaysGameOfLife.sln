@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.API", "GameOfLife.API\GameOfLife.API.csproj", "{71842924-E656-4855-851A-181A931C0178}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.API", "src\GameOfLife.API\GameOfLife.API.csproj", "{B5CA0F15-C226-6581-EB9E-5444F8EA6ACD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.Database", "GameOfLife.Database\GameOfLife.Database.csproj", "{7F8AA5A2-D98B-4AC3-8A4A-1C5B321E2A2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.DbMigrations", "src\GameOfLife.DbMigrations\GameOfLife.DbMigrations.csproj", "{65961F38-93F4-BE9C-A25F-655A21511A3E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +19,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{71842924-E656-4855-851A-181A931C0178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71842924-E656-4855-851A-181A931C0178}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71842924-E656-4855-851A-181A931C0178}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71842924-E656-4855-851A-181A931C0178}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F8AA5A2-D98B-4AC3-8A4A-1C5B321E2A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F8AA5A2-D98B-4AC3-8A4A-1C5B321E2A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F8AA5A2-D98B-4AC3-8A4A-1C5B321E2A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F8AA5A2-D98B-4AC3-8A4A-1C5B321E2A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5CA0F15-C226-6581-EB9E-5444F8EA6ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5CA0F15-C226-6581-EB9E-5444F8EA6ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5CA0F15-C226-6581-EB9E-5444F8EA6ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5CA0F15-C226-6581-EB9E-5444F8EA6ACD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65961F38-93F4-BE9C-A25F-655A21511A3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65961F38-93F4-BE9C-A25F-655A21511A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65961F38-93F4-BE9C-A25F-655A21511A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65961F38-93F4-BE9C-A25F-655A21511A3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

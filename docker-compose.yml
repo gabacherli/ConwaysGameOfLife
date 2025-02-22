@@ -1,0 +1,61 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      MSSQL_SA_PASSWORD_FILE: /run/secrets/dev_board_sa_password
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    secrets:
+      - dev_board_sa_password
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$(cat /run/secrets/dev_board_sa_password)" -Q "SELECT 1" -C || exit 1
+      interval: 5s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+
+  dbmigrations:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dbmigrations-runtime
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    secrets:
+      - dev_board_rw_db_connection_string
+    environment:
+      - DockerSecretPaths__BoardWriteConnectionString=/run/secrets/dev_board_rw_db_connection_string
+    restart: "no"  # Ensure migrations run once and exit
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api-runtime
+    depends_on:
+      dbmigrations:
+        condition: service_completed_successfully
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DockerSecretPaths__BoardReadConnectionString=/run/secrets/dev_board_ro_connection_string
+      - DockerSecretPaths__BoardWriteConnectionString=/run/secrets/dev_board_rw_db_connection_string
+    ports:
+      - "5000:5000"
+    secrets:
+      - dev_board_ro_connection_string
+      - dev_board_rw_db_connection_string
+
+volumes:
+  sql_data:
+
+secrets:
+  dev_board_sa_password:
+    file: ./secrets/dev_board_sa_password.txt
+  dev_board_ro_connection_string:
+    file: ./secrets/dev_board_ro_connection_string.txt
+  dev_board_rw_db_connection_string:
+    file: ./secrets/dev_board_rw_db_connection_string.txt

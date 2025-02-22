@@ -2,6 +2,11 @@ using GameOfLife.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5000);
+});
+
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
 builder.Configuration
@@ -13,7 +18,8 @@ IConfiguration configuration = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAppSettings(configuration);
+builder.Services.AddDockerSecretPaths(configuration);
+// builder.Services.AddAppSettings(configuration);
 
 var app = builder.Build();
 
