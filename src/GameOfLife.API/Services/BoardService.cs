@@ -50,7 +50,7 @@ namespace GameOfLife.API.Services
             var board = await _readRepository.GetBoardAsync(id);
 
             if (board is null) return null;
-            board.State = BoardHelpers.GetNextTick(board, board.Rows, board.Columns, out _);
+            board.State = BoardHelper.GetNextTick(board, board.Rows, board.Columns, out _);
 
             return board;
         }

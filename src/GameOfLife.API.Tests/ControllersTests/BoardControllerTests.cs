@@ -93,7 +93,7 @@ namespace GameOfLife.API.Tests.ControllersTests
 
             _boardService.GetNextTickOfExistingBoardAsync(firstIteration!.Id)!.Returns(Task.FromResult(expectedSecondIteration));
 
-            var secondIteration = BoardHelpers.GetNextTick(firstIteration, firstIteration.Rows, firstIteration.Columns, out var secondIterationStateHash);
+            var secondIteration = BoardHelper.GetNextTick(firstIteration, firstIteration.Rows, firstIteration.Columns, out var secondIterationStateHash);
 
             // Act
             var result = await _controller.GetNextTickOfExistingBoardAsync(firstIteration.Id);

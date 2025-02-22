@@ -15,9 +15,9 @@ namespace GameOfLife.API.Models
         [Required, ValidateState]
         public List<List<bool>> State { get; set; } = new();
         [JsonIgnore]
-        public byte[] StateBinary => BoardHelpers.ConvertToBinary(State);
+        public byte[] StateBinary => BoardHelper.ConvertToBinary(State);
         [JsonIgnore]
-        public byte[] StateHash => BoardHelpers.ComputeStateHash(StateBinary);
+        public byte[] StateHash => BoardHelper.ComputeStateHash(StateBinary);
 
         /// <summary>
         /// Custom validation attribute for board state validation.

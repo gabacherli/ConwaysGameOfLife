@@ -15,7 +15,7 @@ namespace GameOfLife.API.Repositories.Write
 
         public BoardWriteRepository(IOptions<AppSettings> settings)
         {
-            _connectionString = ConfigurationHelpers.ReadDockerSecretFileAsString(settings.Value.DockerSecretPaths.BoardWriteConnectionString);
+            _connectionString = ConfigurationHelper.ReadDockerSecretFileAsString(settings.Value.DockerSecretPaths.BoardWriteConnectionString);
         }
 
         public async Task<Guid> InsertBoardAsync(Board board)

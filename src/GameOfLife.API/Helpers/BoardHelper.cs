@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace GameOfLife.API.Helpers
 {
-    public static class BoardHelpers
+    public static class BoardHelper
     {
         public static byte[] ConvertToBinary(List<List<bool>> state)
         {
@@ -15,8 +15,7 @@ namespace GameOfLife.API.Helpers
             return SHA256.HashData(stateBinary);
         }
 
-        public static List<List<bool>> GetNextTick(Board board, int rows, int columns, out byte[
-] stateHash)
+        public static List<List<bool>> GetNextTick(Board board, int rows, int columns, out byte[] stateHash)
         {
             var nextTick = new List<List<bool>>();
 

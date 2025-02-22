@@ -15,7 +15,7 @@ namespace GameOfLife.API.Tests.HelpersTests
             try
             {
                 // Act
-                var result = ConfigurationHelpers.ReadDockerSecretFileAsString(testFilePath);
+                var result = ConfigurationHelper.ReadDockerSecretFileAsString(testFilePath);
 
                 // Assert
                 Assert.Equal(expectedContent, result);
@@ -35,7 +35,7 @@ namespace GameOfLife.API.Tests.HelpersTests
 
             // Act & Assert
             var exception = Assert.Throws<FileNotFoundException>(() =>
-                ConfigurationHelpers.ReadDockerSecretFileAsString(nonExistentPath));
+                ConfigurationHelper.ReadDockerSecretFileAsString(nonExistentPath));
             Assert.Equal(expectedErrorMessage, exception.Message);
         }
     }

@@ -15,7 +15,7 @@ namespace GameOfLife.API.Repositories.Read
 
         public BoardReadRepository(IOptions<AppSettings> settings)
         {
-            _connectionString = ConfigurationHelpers.ReadDockerSecretFileAsString(settings.Value.DockerSecretPaths.BoardReadConnectionString);
+            _connectionString = ConfigurationHelper.ReadDockerSecretFileAsString(settings.Value.DockerSecretPaths.BoardReadConnectionString);
         }
 
         public async Task<Board?> GetBoardAsync(Guid id)
@@ -23,7 +23,7 @@ namespace GameOfLife.API.Repositories.Read
             using var connection = new SqlConnection(_connectionString);
             connection.Open();
 
-            // Fetching as `dynamic` object so we can convert the binary state to a 2D array before returning the Board object.
+            // Using `dynamic` type so we can convert the binary state to a 2D array before returning the Board object.
             var board = await connection.QueryFirstOrDefaultAsync<dynamic>(GetBoardSql, new { Id = id });
 
             if (board is null) return null;
@@ -33,7 +33,7 @@ namespace GameOfLife.API.Repositories.Read
                 Id = board!.Id,
                 Rows = board.Rows,
                 Columns = board.Columns,
-                State = BoardHelpers.ConvertFromBinary(board.State, board.Rows, board.Columns)
+                State = BoardHelper.ConvertFromBinary(board.State, board.Rows, board.Columns)
             };
         }
     }

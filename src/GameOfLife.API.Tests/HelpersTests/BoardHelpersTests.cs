@@ -18,7 +18,7 @@ namespace GameOfLife.API.Tests.HelpersTests
             var expectedBinary = new byte[] { 1, 0, 1, 0, 1, 0 };
 
             // Act
-            var result = BoardHelpers.ConvertToBinary(state);
+            var result = BoardHelper.ConvertToBinary(state);
 
             // Assert
             Assert.Equal(expectedBinary, result);
@@ -31,7 +31,7 @@ namespace GameOfLife.API.Tests.HelpersTests
             var data = new byte[] { 1, 0, 1, 0, 1, 0 };
 
             // Act
-            var hashResult = BoardHelpers.ComputeStateHash(data);
+            var hashResult = BoardHelper.ComputeStateHash(data);
             var expectedHash = SHA256.HashData(data);
 
             // Assert
@@ -45,10 +45,10 @@ namespace GameOfLife.API.Tests.HelpersTests
             // Arrange
             var board = new Board { Rows = rows, Columns = cols, State = initialState };
 
-            var expectedNextStateHash = BoardHelpers.ComputeStateHash(BoardHelpers.ConvertToBinary(expectedNextState));
+            var expectedNextStateHash = BoardHelper.ComputeStateHash(BoardHelper.ConvertToBinary(expectedNextState));
 
             // Act
-            var result = BoardHelpers.GetNextTick(board, board.Rows, board.Columns, out var resultStateHash);
+            var result = BoardHelper.GetNextTick(board, board.Rows, board.Columns, out var resultStateHash);
 
             // Assert
             Assert.Equal(expectedNextState, result);
@@ -60,7 +60,7 @@ namespace GameOfLife.API.Tests.HelpersTests
         public void CountLiveNeighbors_ShouldReturnCorrectCount(List<List<bool>> state, int row, int col, int rows, int cols, int expectedCount)
         {
             // Act
-            var actualCount = BoardHelpers.CountLiveNeighbors(state, row, col, rows, cols);
+            var actualCount = BoardHelper.CountLiveNeighbors(state, row, col, rows, cols);
 
             // Assert
             Assert.Equal(expectedCount, actualCount);
@@ -78,7 +78,7 @@ namespace GameOfLife.API.Tests.HelpersTests
             };
 
             // Act
-            var result = BoardHelpers.ConvertFromBinary(binaryState, 2, 3);
+            var result = BoardHelper.ConvertFromBinary(binaryState, 2, 3);
 
             // Assert
             Assert.Equal(expectedState, result);
@@ -118,7 +118,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 10x10 Glider pattern
                 gliderPattern_10x10,
                 10, 10,
-                BoardHelpers.GetNextTick(new Board { Rows = 10, Columns = 10, State = gliderPattern_10x10 }, 10, 10, out _)
+                BoardHelper.GetNextTick(new Board { Rows = 10, Columns = 10, State = gliderPattern_10x10 }, 10, 10, out _)
             };
 
             yield return new object[]
@@ -126,7 +126,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 50x50 random board
                 random_50x50,
                 50, 50,
-                BoardHelpers.GetNextTick(new Board { Rows = 50, Columns = 50, State = random_50x50 }, 50, 50, out _)
+                BoardHelper.GetNextTick(new Board { Rows = 50, Columns = 50, State = random_50x50 }, 50, 50, out _)
             };
 
             yield return new object[]
@@ -134,7 +134,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 100x100 Checkerboard pattern
                 checkerboard_100x100,
                 100, 100,
-                BoardHelpers.GetNextTick(new Board { Rows = 100, Columns = 100, State = checkerboard_100x100 }, 100, 100, out _)
+                BoardHelper.GetNextTick(new Board { Rows = 100, Columns = 100, State = checkerboard_100x100 }, 100, 100, out _)
             };
 
             yield return new object[]
@@ -142,7 +142,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 200x200 All Alive Board
                 allAlive_200x200,
                 200, 200,
-                BoardHelpers.GetNextTick(new Board { Rows = 200, Columns = 200, State = allAlive_200x200 }, 200, 200, out _)
+                BoardHelper.GetNextTick(new Board { Rows = 200, Columns = 200, State = allAlive_200x200 }, 200, 200, out _)
             };
         }
 
