@@ -38,16 +38,16 @@ namespace GameOfLife.API.Tests.ExtensionsTests
             services.BuildServiceProvider();
 
             // Assert
-            AssertServiceRegistered<IBoardService, BoardService>(services);
-            AssertServiceRegistered<IBoardReadRepository, BoardReadRepository>(services);
-            AssertServiceRegistered<IBoardWriteRepository, BoardWriteRepository>(services);
+            AssertServiceRegistered<IBoardService, BoardService>(services, ServiceLifetime.Scoped);
+            AssertServiceRegistered<IBoardReadRepository, BoardReadRepository>(services, ServiceLifetime.Transient);
+            AssertServiceRegistered<IBoardWriteRepository, BoardWriteRepository>(services, ServiceLifetime.Transient);
         }
 
-        private static void AssertServiceRegistered<TService, TImplementation>(IServiceCollection services)
+        private static void AssertServiceRegistered<TService, TImplementation>(IServiceCollection services, ServiceLifetime lifetime)
         {
             var serviceDescriptor = services.FirstOrDefault(sd => sd.ServiceType == typeof(TService));
             Assert.NotNull(serviceDescriptor);
-            Assert.Equal(ServiceLifetime.Scoped, serviceDescriptor.Lifetime);
+            Assert.Equal(lifetime, serviceDescriptor.Lifetime);
             Assert.Equal(typeof(TImplementation), serviceDescriptor.ImplementationType);
         }
     }
