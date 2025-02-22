@@ -1,12 +1,12 @@
 ﻿using GameOfLife.API.Controllers;
+using GameOfLife.API.Helpers;
 using GameOfLife.API.Models;
 using GameOfLife.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NSubstitute;
-using GameOfLife.API.Helpers;
 
 namespace GameOfLife.API.Tests.ControllersTests
 {

@@ -16,7 +16,7 @@ namespace GameOfLife.API.Helpers
         }
 
         public static List<List<bool>> GetNextTick(Board board, int rows, int columns, out byte[
-           ] stateHash)
+] stateHash)
         {
             var nextTick = new List<List<bool>>();
 
@@ -39,10 +39,9 @@ namespace GameOfLife.API.Helpers
                 }
             }
 
-            var nextTickBinary = ConvertToBinary(nextTick);
-            stateHash = ComputeStateHash(nextTickBinary);
+            stateHash = ComputeStateHash(ConvertToBinary(nextTick));
 
-            return nextTick ;
+            return nextTick;
         }
 
         public static int CountLiveNeighbors(List<List<bool>> state, int row, int col, int rows, int columns)
