@@ -1,8 +1,8 @@
 ﻿using GameOfLife.API.Models;
 
-namespace GameOfLife.API.Services
+namespace GameOfLife.API.Repositories.Write
 {
-    public interface IBoardService
+    public interface IBoardWriteRepository
     {
         Task<Guid> InsertBoardAsync(Board board);
     }
