@@ -204,7 +204,9 @@ namespace GameOfLife.API.Tests.ControllersTests
         {
             // Arrange
             var boardId = Guid.NewGuid();
-            _boardService.GetStableOrFinalIterationAsync(boardId, Arg.Any<int>()).Returns(Task.FromResult<(Board?, int, EndReason)?>(null));
+            _boardService
+                .GetStableOrFinalIterationAsync(boardId, Arg.Any<int>())
+                .Returns(Task.FromResult<(Board?, int, EndReason)?>(null));
 
             // Act
             var result = await _controller.GetStableOrFinalIterationAsync(boardId, 100);
@@ -232,7 +234,8 @@ namespace GameOfLife.API.Tests.ControllersTests
             var expectedIterations = 10;
             var endReason = EndReason.Stable;
 
-            _boardService.GetStableOrFinalIterationAsync(boardId, Arg.Any<int>())
+            _boardService
+                .GetStableOrFinalIterationAsync(boardId, Arg.Any<int>())
                 .Returns(Task.FromResult<(Board?, int, EndReason)?>((board, expectedIterations, endReason)));
 
             // Act
