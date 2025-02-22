@@ -11,7 +11,6 @@ namespace GameOfLife.API.Repositories.Write
     public class BoardWriteRepository : IBoardWriteRepository
     {
         private readonly string _connectionString;
-
         private const string InsertBoardSql = "sp_insertBoardState";
 
         public BoardWriteRepository(IOptions<AppSettings> settings)

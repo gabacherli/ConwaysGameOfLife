@@ -20,7 +20,7 @@ public class BoardController : ControllerBase
     /// <summary>
     /// Uploads a new board to the GameOfLife db.
     /// </summary>
-    /// <param name="board">The board object containing dimensions and 2 dimensional array of states.</param>
+    /// <param name="board">The board object containing its dimensions and a 2 dimensional array of states.</param>
     /// <returns>The ID of the board.</returns>
     /// <response code="200">Returns the freshly generated board ID.</response>
     /// <response code="400">ValidationResult of the payload.</response>
@@ -36,5 +36,25 @@ public class BoardController : ControllerBase
 
         var id = await _boardService.InsertBoardAsync(board);
         return Ok(id);
+    }
+
+    /// <summary>
+    /// Reveals the next tick/state of a specified board.
+    /// </summary>
+    /// <param name="id">The ID of an existing board.</param>
+    /// <returns>The next tick/state of a board.</returns>
+    /// <response code="200">Returns the next tick/state of an existing board.</response>
+    /// <response code="404">Board not found.</response>
+    [HttpGet("{id}/next")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetNextTickOfExistingBoardAsync(Guid id)
+    {
+        var result = await _boardService.GetNextTickOfExistingBoardAsync(id);
+
+        if (result is null)
+            return NotFound(new { _ = "Board not found." });
+
+        return Ok(result);
     }
 }

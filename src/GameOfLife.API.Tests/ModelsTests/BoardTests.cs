@@ -104,7 +104,7 @@ namespace GameOfLife.API.Tests.ModelsTests
 
             // Assert
             Assert.False(result);
-            Assert.Contains(validationResults, v => v.ErrorMessage == $"The {nameof(Board.State)} field is required.");
+            Assert.Contains(validationResults, v => v.ErrorMessage is $"The {nameof(Board.State)} field is required.");
         }
     }
 }
