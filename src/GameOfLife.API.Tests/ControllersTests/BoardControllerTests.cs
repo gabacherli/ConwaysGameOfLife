@@ -26,77 +26,7 @@ namespace GameOfLife.API.Tests.ControllersTests
             };
         }
 
-        public static IEnumerable<object[]> GetInvalidBoardTestCases()
-        {
-            yield return new object[]
-            {
-                new Board
-                {
-                    Rows = 5,
-                    Columns = 5,
-                    State = new List<List<bool>>() // Empty state
-                },
-                nameof(Board.State),
-                "Board state cannot be null or empty."
-            };
 
-            yield return new object[]
-            {
-                new Board
-                {
-                    Rows = 5,
-                    Columns = 5,
-                    State = new List<List<bool>>
-                    {
-                        new() { true, false, true, false },
-                        new() { false, true, false, true, false },
-                        new() { true, false, true, false, true },
-                        new() { false, true, false, true, false },
-                        new() { true, false, true, false, true }
-                    }
-                },
-                nameof(Board.State),
-                "Board state column count mismatch in 1 row(s): Row 0 (Expected 5, Found 4)."
-            };
-
-            yield return new object[]
-            {
-                new Board
-                {
-                    Rows = 4, // Should be 5
-                    Columns = 5,
-                    State = new List<List<bool>>
-                    {
-                        new() { true, false, true, false, true },
-                        new() { false, true, false, true, false },
-                        new() { true, false, true, false, true },
-                        new() { false, true, false, true, false },
-                        new() { true, false, true, false, true }
-                    }
-                },
-                nameof(Board.State),
-                "Board state row count mismatch: Expected 4, but got 5."
-            };
-
-            yield return new object[]
-            {
-                new Board
-                {
-                    Rows = 5,
-                    Columns = 5,
-                    State = new List<List<bool>>
-                    {
-                        new() { true, false, true, false, true },
-                        new() { false, true, false, true, false },
-                        new() { true, false, true, false, true },
-                        new() { false, true, false, true, false },
-                        new() { } // Empty row
-                    }
-                },
-                nameof(Board.State),
-                "Board state column count mismatch in 1 row(s): Row 4 (Expected 5, Found 0)."
-            };
-        }
 
         [Fact]
         public async Task UploadBoard_ShouldReturnOk_WhenBoardIsInserted()
@@ -187,6 +117,78 @@ namespace GameOfLife.API.Tests.ControllersTests
 
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+        public static IEnumerable<object[]> GetInvalidBoardTestCases()
+        {
+            yield return new object[]
+            {
+                new Board
+                {
+                    Rows = 5,
+                    Columns = 5,
+                    State = new List<List<bool>>() // Empty state
+                },
+                nameof(Board.State),
+                "Board state cannot be null or empty."
+            };
+
+            yield return new object[]
+            {
+                new Board
+                {
+                    Rows = 5,
+                    Columns = 5,
+                    State = new List<List<bool>>
+                    {
+                        new() { true, false, true, false },
+                        new() { false, true, false, true, false },
+                        new() { true, false, true, false, true },
+                        new() { false, true, false, true, false },
+                        new() { true, false, true, false, true }
+                    }
+                },
+                nameof(Board.State),
+                "Board state column count mismatch in 1 row(s): Row 0 (Expected 5, Found 4)."
+            };
+
+            yield return new object[]
+            {
+                new Board
+                {
+                    Rows = 4, // Should be 5
+                    Columns = 5,
+                    State = new List<List<bool>>
+                    {
+                        new() { true, false, true, false, true },
+                        new() { false, true, false, true, false },
+                        new() { true, false, true, false, true },
+                        new() { false, true, false, true, false },
+                        new() { true, false, true, false, true }
+                    }
+                },
+                nameof(Board.State),
+                "Board state row count mismatch: Expected 4, but got 5."
+            };
+
+            yield return new object[]
+            {
+                new Board
+                {
+                    Rows = 5,
+                    Columns = 5,
+                    State = new List<List<bool>>
+                    {
+                        new() { true, false, true, false, true },
+                        new() { false, true, false, true, false },
+                        new() { true, false, true, false, true },
+                        new() { false, true, false, true, false },
+                        new() { } // Empty row
+                    }
+                },
+                nameof(Board.State),
+                "Board state column count mismatch in 1 row(s): Row 4 (Expected 5, Found 0)."
+            };
         }
     }
 }
