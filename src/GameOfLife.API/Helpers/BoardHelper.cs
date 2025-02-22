@@ -88,5 +88,17 @@ namespace GameOfLife.API.Helpers
 
             return state;
         }
+
+        public static List<List<bool>> GetBoardAfterNIterations(Board board, int rows, int columns, int iterations, out byte[] stateHash)
+        {
+            for (int i = 0; i < iterations; i++)
+            {
+                board.State = GetNextTick(board, rows, columns, out _);
+            }
+
+            stateHash = ComputeStateHash(ConvertToBinary(board.State));
+
+            return board.State;
+        }
     }
 }

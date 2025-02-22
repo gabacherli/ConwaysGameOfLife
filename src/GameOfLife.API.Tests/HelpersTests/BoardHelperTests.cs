@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace GameOfLife.API.Tests.HelpersTests
 {
-    public class BoardHelpersTests
+    public class BoardHelperTests
     {
         [Fact]
         public void ConvertToBinary_ShouldConvertCorrectly()
@@ -201,7 +201,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 var row = new List<bool>();
                 for (int j = 0; j < cols; j++)
                 {
-                    row.Add((i + j) % 2 == 0);
+                    row.Add((i + j) % 2 is 0);
                 }
                 board.Add(row);
             }

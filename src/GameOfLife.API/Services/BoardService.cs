@@ -12,18 +12,18 @@ namespace GameOfLife.API.Services
         private readonly ILogger<BoardService> _logger;
         private readonly IBoardReadRepository _readRepository;
         private readonly IBoardWriteRepository _writeRepository;
-        private readonly int _maxAttempts;
+        private readonly int _maxIterations;
 
         public BoardService(
-            IBoardReadRepository readRepository,
-            IBoardWriteRepository writeRepository,
+            ILogger<BoardService> logger,
             IOptions<AppSettings> settings,
-            ILogger<BoardService> logger)
+            IBoardReadRepository readRepository,
+            IBoardWriteRepository writeRepository)
         {
+            _logger = logger;
+            _maxIterations = settings.Value.MaxIterations;
             _readRepository = readRepository;
             _writeRepository = writeRepository;
-            _maxAttempts = settings.Value.MaxAttempts;
-            _logger = logger;
         }
 
         /// <summary>
@@ -50,7 +50,19 @@ namespace GameOfLife.API.Services
             var board = await _readRepository.GetBoardAsync(id);
 
             if (board is null) return null;
+
             board.State = BoardHelper.GetNextTick(board, board.Rows, board.Columns, out _);
+
+            return board;
+        }
+
+        public async Task<Board?> GetBoardAfterNIterationsAsync(Guid id, int iterations)
+        {
+            var board = await _readRepository.GetBoardAsync(id);
+
+            if (board is null) return null;
+
+            board.State = BoardHelper.GetBoardAfterNIterations(board, board.Rows, board.Columns, iterations, out _);
 
             return board;
         }
