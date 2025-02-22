@@ -153,20 +153,21 @@ namespace GameOfLife.API.Helpers
         {
             var iterationIndex = 0;
             currentHash = board.StateHash;
-            var hashes = new HashSet<byte[]>();
+            var hashes = new HashSet<string>();
 
             while (iterationIndex < maxIterations)
             {
-                if (hashes.Contains(currentHash))
+                var currentHashString = Convert.ToBase64String(currentHash);
+                if (hashes.Contains(currentHashString))
                 {
                     endReason = EndReason.Loop;
                     return (board.State, iterationIndex);
                 }
 
-                hashes.Add(currentHash);
+                hashes.Add(currentHashString);
                 _ = GetNextIteration(board, out var nextIterationHash);
 
-                if (currentHash == nextIterationHash)
+                if (currentHash.SequenceEqual(nextIterationHash))
                 {
                     endReason = EndReason.Stable;
                     return (board.State, iterationIndex);

@@ -146,17 +146,15 @@ namespace GameOfLife.API.Tests.ControllersTests
         [InlineData(-3, 100, "b3c6369c-2416-41be-9849-1a5e914af7d3")]
         [InlineData(500, 1000, "00000000-0000-0000-0000-000000000000")]
 
-        public async Task GetNextNIterationsAsync_ShouldReturnBadRequest_WhenInputIsInvalid(int iterations, int maxIterations, string id)
+        public async Task GetNextNIterationsAsync_ShouldReturnBadRequest_WhenInputIsInvalid(int iterations, int maxIterations, Guid id)
         {
             // Arrange
             _appSettings.Value.Returns(new AppSettings { MaxIterations = maxIterations });
 
-            var boardId = Guid.Parse(id);
-
             _controller = new BoardController(_logger, _appSettings, _boardService);
 
             // Act
-            var result = await _controller.GetBoardAfterNIterationsAsync(boardId, iterations);
+            var result = await _controller.GetBoardAfterNIterationsAsync(id, iterations);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -176,6 +174,77 @@ namespace GameOfLife.API.Tests.ControllersTests
 
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData("00000000-0000-0000-0000-000000000000", 100)]
+        [InlineData("350ac640-c1f8-49b0-a43a-2ca3360f4413", -10)]
+        [InlineData("350ac640-c1f8-49b0-a43a-2ca3360f4413", 2000)]
+        public async Task GetStableOrFinalIterationAsync_ShouldReturnBadRequest_WhenInvalidInput(Guid id, int maxIterations)
+        {
+            // Arrange
+            var configuredMaxIterations = 1500;
+            _appSettings.Value.Returns(new AppSettings { MaxIterations = configuredMaxIterations });
+
+            _controller = new BoardController(_logger, _appSettings, _boardService);
+
+            var expectedErrorMessage = $"{nameof(id)} must be different than the default value and {nameof(maxIterations)} must be between 1 and {_appSettings.Value.MaxIterations}.";
+
+            // Act
+            var result = await _controller.GetStableOrFinalIterationAsync(id, maxIterations);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            Assert.Contains(expectedErrorMessage, badRequestResult.Value!.ToString());
+        }
+
+        [Fact]
+        public async Task GetStableOrFinalIterationAsync_ShouldReturnNotFound_WhenBoardDoesNotExist()
+        {
+            // Arrange
+            var boardId = Guid.NewGuid();
+            _boardService.GetStableOrFinalIterationAsync(boardId, Arg.Any<int>()).Returns(Task.FromResult<(Board?, int, EndReason)?>(null));
+
+            // Act
+            var result = await _controller.GetStableOrFinalIterationAsync(boardId, 100);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task GetStableOrFinalIterationAsync_ShouldReturnOk_WhenBoardExists()
+        {
+            // Arrange
+            var boardId = Guid.NewGuid();
+            var board = new Board
+            {
+                Id = boardId,
+                Rows = 2,
+                Columns = 3,
+                State = new List<List<bool>>
+                {
+                    new() { false, true, false },
+                    new() { true, false, true }
+                }
+            };
+            var expectedIterations = 10;
+            var endReason = EndReason.Stable;
+
+            _boardService.GetStableOrFinalIterationAsync(boardId, Arg.Any<int>())
+                .Returns(Task.FromResult<(Board?, int, EndReason)?>((board, expectedIterations, endReason)));
+
+            // Act
+            var result = await _controller.GetStableOrFinalIterationAsync(boardId, 1);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<FinalIterationResponse>(okResult.Value);
+
+            Assert.Equal(board, response.Board);
+            Assert.Equal(expectedIterations, response.Iterations);
+            Assert.Equal(endReason, response.EndReason);
         }
 
         public static IEnumerable<object[]> GetInvalidBoardTestCases()
