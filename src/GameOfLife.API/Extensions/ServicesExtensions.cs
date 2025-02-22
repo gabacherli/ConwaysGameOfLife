@@ -1,10 +1,15 @@
 ﻿using GameOfLife.API.Configurations;
-using GameOfLife.API.Helpers;
 
 namespace GameOfLife.API.Extensions
 {
     public static class ServicesExtensions
     {
+        public static void AddDockerSecretPaths(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<DockerSecretPaths>(configuration.GetSection(nameof(DockerSecretPaths)));
+        }
+
+        /*
         public static void AddAppSettings(this IServiceCollection services, IConfiguration configuration)
         {
             // Load the connection string path from appsettings.json
@@ -29,5 +34,6 @@ namespace GameOfLife.API.Extensions
 
             });
         }
+        */
     }
 }

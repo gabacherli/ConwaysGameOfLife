@@ -23,6 +23,6 @@ BEGIN
         INSERT INTO Boards (Width, Height, State, StateHash)
         VALUES (@Width, @Height, @State, @StateHash);
         
-        SET @BoardId = SCOPE_IDENTITY();
+        SET @BoardId = NEWID();
     END
 END;
