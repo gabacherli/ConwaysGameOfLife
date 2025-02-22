@@ -35,7 +35,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else Console.WriteLine("Running in other mode.");
 
 app.UseHttpsRedirection();
 
