@@ -5,10 +5,13 @@ VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.API", "src\GameOfLife.API\GameOfLife.API.csproj", "{B5CA0F15-C226-6581-EB9E-5444F8EA6ACD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.API.Tests", "src\GameOfLife.API.Tests\GameOfLife.API.Tests.csproj", "{DF3A4406-11A2-45A0-B1A3-4A7C31D0607C}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfLife.DbMigrations", "src\GameOfLife.DbMigrations\GameOfLife.DbMigrations.csproj", "{65961F38-93F4-BE9C-A25F-655A21511A3E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
 	EndProjectSection
@@ -27,6 +30,10 @@ Global
 		{65961F38-93F4-BE9C-A25F-655A21511A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65961F38-93F4-BE9C-A25F-655A21511A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65961F38-93F4-BE9C-A25F-655A21511A3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF3A4406-11A2-45A0-B1A3-4A7C31D0607C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF3A4406-11A2-45A0-B1A3-4A7C31D0607C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF3A4406-11A2-45A0-B1A3-4A7C31D0607C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF3A4406-11A2-45A0-B1A3-4A7C31D0607C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
