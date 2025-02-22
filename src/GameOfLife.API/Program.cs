@@ -1,7 +1,4 @@
 using GameOfLife.API.Extensions;
-using GameOfLife.API.Repositories.Read;
-using GameOfLife.API.Repositories.Write;
-using GameOfLife.API.Services;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
