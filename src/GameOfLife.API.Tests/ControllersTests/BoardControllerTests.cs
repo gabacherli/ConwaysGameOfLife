@@ -3,7 +3,10 @@ using GameOfLife.API.Models;
 using GameOfLife.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 using NSubstitute;
+using GameOfLife.API.Helpers;
 
 namespace GameOfLife.API.Tests.ControllersTests
 {
@@ -12,10 +15,15 @@ namespace GameOfLife.API.Tests.ControllersTests
         private readonly IBoardService _boardService = Substitute.For<IBoardService>();
         private readonly ILogger<BoardController> _logger = Substitute.For<ILogger<BoardController>>();
         private readonly BoardController _controller;
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         public BoardControllerTests()
         {
             _controller = new BoardController(_logger, _boardService);
+            _jsonSerializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver { IgnoreSerializableAttribute = false }
+            };
         }
 
         public static IEnumerable<object[]> GetInvalidBoardTestCases()
@@ -139,6 +147,46 @@ namespace GameOfLife.API.Tests.ControllersTests
             Assert.NotNull(errorMessages);
             Assert.Single(errorMessages);
             Assert.Contains(expectedErrorMessage, errorMessages.First());
+        }
+
+        [Fact]
+        public async Task GetNextTickOfExistingBoardAsync_ShouldReturnOk_WhenBoardExists()
+        {
+            // Arrange
+            var firstIterationJson = File.ReadAllText("./ControllersTests/Payloads/20x20board_1stIteration.json");
+
+            var secondIterationJson = File.ReadAllText("./ControllersTests/Payloads/20x20board_2ndIteration.json");
+
+            var firstIteration = JsonConvert.DeserializeObject<Board>(firstIterationJson, _jsonSerializerSettings);
+
+            var expectedSecondIteration = JsonConvert.DeserializeObject<Board>(secondIterationJson, _jsonSerializerSettings);
+
+            _boardService.GetNextTickOfExistingBoardAsync(firstIteration!.Id)!.Returns(Task.FromResult(expectedSecondIteration));
+
+            var secondIteration = BoardHelpers.GetNextTick(firstIteration, firstIteration.Rows, firstIteration.Columns, out var secondIterationStateHash);
+
+            // Act
+            var result = await _controller.GetNextTickOfExistingBoardAsync(firstIteration.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(expectedSecondIteration, okResult.Value);
+            Assert.Equal(expectedSecondIteration!.State, secondIteration);
+            Assert.Equal(expectedSecondIteration!.StateHash, secondIterationStateHash);
+        }
+
+        [Fact]
+        public async Task GetNextTickOfExistingBoardAsync_ShouldReturnNotFound_WhenBoardDoesNotExist()
+        {
+            // Arrange
+            var boardId = Guid.NewGuid();
+            _boardService.GetNextTickOfExistingBoardAsync(boardId).Returns(Task.FromResult<Board?>(null));
+
+            // Act
+            var result = await _controller.GetNextTickOfExistingBoardAsync(boardId);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
         }
     }
 }
