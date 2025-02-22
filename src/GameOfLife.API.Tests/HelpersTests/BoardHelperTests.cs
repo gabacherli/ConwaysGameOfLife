@@ -40,7 +40,7 @@ namespace GameOfLife.API.Tests.HelpersTests
 
         [Theory]
         [MemberData(nameof(BoardStateData))]
-        public void GetNextTick_ShouldComputeCorrectNextState(List<List<bool>> initialState, int rows, int cols, List<List<bool>> expectedNextState)
+        public void GetNextIteration_ShouldComputeCorrectNextState(List<List<bool>> initialState, int rows, int cols, List<List<bool>> expectedNextState)
         {
             // Arrange
             var board = new Board { Rows = rows, Columns = cols, State = initialState };
@@ -48,7 +48,7 @@ namespace GameOfLife.API.Tests.HelpersTests
             var expectedNextStateHash = BoardHelper.ComputeStateHash(BoardHelper.ConvertToBinary(expectedNextState));
 
             // Act
-            var result = BoardHelper.GetNextTick(board, board.Rows, board.Columns, out var resultStateHash);
+            var result = BoardHelper.GetNextIteration(board, out var resultStateHash);
 
             // Assert
             Assert.Equal(expectedNextState, result);
@@ -94,7 +94,7 @@ namespace GameOfLife.API.Tests.HelpersTests
             var expectedFinalStateHash = BoardHelper.ComputeStateHash(BoardHelper.ConvertToBinary(expectedFinalState));
 
             // Act
-            var finalState = BoardHelper.GetBoardAfterNIterations(board, rows, cols, iterations, out var resultStateHash);
+            var finalState = BoardHelper.GetBoardAfterNIterations(board, iterations, out var resultStateHash);
 
             // Assert
             Assert.Equal(expectedFinalState, finalState);
@@ -121,7 +121,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 10x10 Glider pattern
                 gliderPattern_10x10,
                 10, 10,
-                BoardHelper.GetNextTick(new Board { Rows = 10, Columns = 10, State = gliderPattern_10x10 }, 10, 10, out _)
+                BoardHelper.GetNextIteration(new Board { Rows = 10, Columns = 10, State = gliderPattern_10x10 }, out _)
             };
 
             yield return new object[]
@@ -129,7 +129,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 50x50 random board
                 random_50x50,
                 50, 50,
-                BoardHelper.GetNextTick(new Board { Rows = 50, Columns = 50, State = random_50x50 }, 50, 50, out _)
+                BoardHelper.GetNextIteration(new Board { Rows = 50, Columns = 50, State = random_50x50 }, out _)
             };
 
             yield return new object[]
@@ -137,7 +137,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 100x100 Checkerboard pattern
                 checkerboard_100x100,
                 100, 100,
-                BoardHelper.GetNextTick(new Board { Rows = 100, Columns = 100, State = checkerboard_100x100 }, 100, 100, out _)
+                BoardHelper.GetNextIteration(new Board { Rows = 100, Columns = 100, State = checkerboard_100x100 }, out _)
             };
 
             yield return new object[]
@@ -145,7 +145,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 200x200 All Alive Board
                 allAlive_200x200,
                 200, 200,
-                BoardHelper.GetNextTick(new Board { Rows = 200, Columns = 200, State = allAlive_200x200 }, 200, 200, out _)
+                BoardHelper.GetNextIteration(new Board { Rows = 200, Columns = 200, State = allAlive_200x200 }, out _)
             };
         }
 
@@ -216,7 +216,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 10x10 Glider pattern after 5 iterations
                 gliderPattern_10x10,
                 10, 10, 5,
-                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 10, Columns = 10, State = gliderPattern_10x10 }, 10, 10, 5, out _)
+                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 10, Columns = 10, State = gliderPattern_10x10 }, 5, out _)
             };
 
             yield return new object[]
@@ -224,7 +224,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 50x50 random board after 10 iterations
                 random_50x50,
                 50, 50, 10,
-                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 50, Columns = 50, State = random_50x50 }, 50, 50, 10, out _)
+                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 50, Columns = 50, State = random_50x50 }, 10, out _)
             };
 
             yield return new object[]
@@ -232,7 +232,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 100x100 Checkerboard pattern after 2 iterations
                 checkerboard_100x100,
                 100, 100, 2,
-                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 100, Columns = 100, State = checkerboard_100x100 }, 100, 100, 2, out _)
+                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 100, Columns = 100, State = checkerboard_100x100 }, 2, out _)
             };
 
             yield return new object[]
@@ -240,7 +240,7 @@ namespace GameOfLife.API.Tests.HelpersTests
                 // 200x200 All Alive Board after 3 iterations
                 allAlive_200x200,
                 200, 200, 3,
-                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 200, Columns = 200, State = allAlive_200x200 }, 200, 200, 3, out _)
+                BoardHelper.GetBoardAfterNIterations(new Board { Rows = 200, Columns = 200, State = allAlive_200x200 }, 3, out _)
             };
         }
 

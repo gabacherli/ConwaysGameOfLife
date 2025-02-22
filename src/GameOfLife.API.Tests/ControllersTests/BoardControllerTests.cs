@@ -81,36 +81,36 @@ namespace GameOfLife.API.Tests.ControllersTests
         }
 
         [Fact]
-        public async Task GetNextTickOfExistingBoardAsync_ShouldReturnOk_WhenBoardExists()
+        public async Task GetNextIterationOfExistingBoardAsync_ShouldReturnOk_WhenBoardExists()
         {
             // Arrange
             var firstIteration = JsonConvert.DeserializeObject<Board>(File.ReadAllText("./ControllersTests/Payloads/20x20glider_1stIteration.json"), _jsonSerializerSettings);
 
-            var expectedSecondIteration = JsonConvert.DeserializeObject<Board>(File.ReadAllText("./ControllersTests/Payloads/20x20glider_2ndIteration.json"), _jsonSerializerSettings);
+            var expectedNextIteration = JsonConvert.DeserializeObject<Board>(File.ReadAllText("./ControllersTests/Payloads/20x20glider_2ndIteration.json"), _jsonSerializerSettings);
 
-            _boardService.GetNextTickOfExistingBoardAsync(firstIteration!.Id)!.Returns(Task.FromResult(expectedSecondIteration));
+            _boardService.GetNextIterationOfExistingBoardAsync(firstIteration!.Id)!.Returns(Task.FromResult(expectedNextIteration));
 
-            var secondIteration = BoardHelper.GetNextTick(firstIteration, firstIteration.Rows, firstIteration.Columns, out var secondIterationStateHash);
+            var nextIteration = BoardHelper.GetNextIteration(firstIteration, out var nextIterationStateHash);
 
             // Act
-            var result = await _controller.GetNextTickOfExistingBoardAsync(firstIteration.Id);
+            var result = await _controller.GetNextIterationOfExistingBoardAsync(firstIteration.Id);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(expectedSecondIteration, okResult.Value);
-            Assert.Equal(expectedSecondIteration!.State, secondIteration);
-            Assert.Equal(expectedSecondIteration!.StateHash, secondIterationStateHash);
+            Assert.Equal(expectedNextIteration, okResult.Value);
+            Assert.Equal(expectedNextIteration!.State, nextIteration);
+            Assert.Equal(expectedNextIteration!.StateHash, nextIterationStateHash);
         }
 
         [Fact]
-        public async Task GetNextTickOfExistingBoardAsync_ShouldReturnNotFound_WhenBoardDoesNotExist()
+        public async Task GetNextIterationOfExistingBoardAsync_ShouldReturnNotFound_WhenBoardDoesNotExist()
         {
             // Arrange
             var boardId = Guid.NewGuid();
-            _boardService.GetNextTickOfExistingBoardAsync(boardId).Returns(Task.FromResult<Board?>(null));
+            _boardService.GetNextIterationOfExistingBoardAsync(boardId).Returns(Task.FromResult<Board?>(null));
 
             // Act
-            var result = await _controller.GetNextTickOfExistingBoardAsync(boardId);
+            var result = await _controller.GetNextIterationOfExistingBoardAsync(boardId);
 
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
@@ -126,12 +126,12 @@ namespace GameOfLife.API.Tests.ControllersTests
 
             var expectedBoard = JsonConvert.DeserializeObject<Board>(File.ReadAllText("./ControllersTests/Payloads/20x20glider_5thIteration.json"), _jsonSerializerSettings);
 
-            _boardService.GetBoardAfterNIterationsAsync(board.Id, iterations)!.Returns(Task.FromResult(expectedBoard));
+            _boardService.GetBoardAfterNIterationsAsync(board!.Id, iterations)!.Returns(Task.FromResult(expectedBoard));
 
             // Act
             var result = await _controller.GetBoardAfterNIterationsAsync(board.Id, iterations);
 
-            var stateAfterNIterations = BoardHelper.GetBoardAfterNIterations(board, board.Rows, board.Columns, iterations, out var stateHashAfterNIterations);
+            var stateAfterNIterations = BoardHelper.GetBoardAfterNIterations(board, iterations, out var stateHashAfterNIterations);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
