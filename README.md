@@ -102,7 +102,7 @@ Content-Type: application/json
     [false, true, false, true, false],
     [true, false, true, false, true]
   ]
-}` 
+}
 ```
 
 #### **Response**
