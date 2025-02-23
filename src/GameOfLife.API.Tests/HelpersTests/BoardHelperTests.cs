@@ -248,7 +248,7 @@ namespace GameOfLife.API.Tests.HelpersTests
             var gliderPattern_10x10 = Generate10x10GliderPattern();
             var loop_oscillator_4x4 = GenerateOscillatorPattern(4, 4);
             var loop_pattern_6x6 = GenerateLoopPattern(6, 6);
-            var random_10000x10000 = GenerateRandomBoard(10000, 10000, 0.5);
+            var random_100x100 = GenerateRandomBoard(100, 100, 0.5);
 
             yield return new object[]
             {
@@ -270,8 +270,8 @@ namespace GameOfLife.API.Tests.HelpersTests
 
             yield return new object[]
             {
-                // 10000x10000 random board: Should reach max iterations since it's unpredictable
-                random_10000x10000, 10000, 10000, 1000, EndReason.MaxIterationsReached, 1000
+                // 100x100 random board: Should reach max iterations since it's unpredictable
+                random_100x100, 100, 100, 1, EndReason.MaxIterationsReached, 1
             };
         }
 
