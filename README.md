@@ -112,7 +112,7 @@ Content-Type: application/json
     [false, true, false, true, false],
     [true, false, true, false, true]
   ]
-}` 
+}
 ```
 
 #### **Response**
@@ -220,7 +220,7 @@ GET /api/boards/{id}/finalIteration/{maxIterations}`
 `Iterations/second =~ 25,000,000 / (rows × columns)`
 The **expected runtime** in seconds for a number of **iterations** is:
 `Expected runtime =~ (iterations × rows × columns) / 25,000,000`
---- 
+ 
 ### 📊 Example Simulations 
 | **Board Size (rows × columns)** | **Iterations** | **Expected runtime** | 
 |------------------------|-------------------|-----------------------|
