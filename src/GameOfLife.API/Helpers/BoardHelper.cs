@@ -157,22 +157,27 @@ namespace GameOfLife.API.Helpers
 
             while (iterationIndex < maxIterations)
             {
-                var currentHashString = Convert.ToBase64String(currentHash);
+                var nextState = GetNextIteration(board, out var nextIterationHash);
+
+                if (currentHash.SequenceEqual(nextIterationHash))
+                {
+                    board.State = nextState;
+                    endReason = EndReason.Stable;
+                    return (board.State, iterationIndex);
+                }
+
+                var currentHashString = BitConverter.ToString(currentHash);
+
                 if (hashes.Contains(currentHashString))
                 {
+                    board.State = ConvertFromBinary(board.StateBinary, board.Rows, board.Columns);
                     endReason = EndReason.Loop;
                     return (board.State, iterationIndex);
                 }
 
                 hashes.Add(currentHashString);
-                _ = GetNextIteration(board, out var nextIterationHash);
 
-                if (currentHash.SequenceEqual(nextIterationHash))
-                {
-                    endReason = EndReason.Stable;
-                    return (board.State, iterationIndex);
-                }
-
+                board.State = nextState;
                 currentHash = nextIterationHash;
                 iterationIndex++;
             }

@@ -40,10 +40,10 @@ namespace GameOfLife.API.Tests.HelpersTests
 
         [Theory]
         [MemberData(nameof(BoardStateData))]
-        public void GetNextIteration_ShouldComputeCorrectNextState(List<List<bool>> initialState, int rows, int cols, List<List<bool>> expectedNextState)
+        public void GetNextIteration_ShouldComputeCorrectNextState(List<List<bool>> initialState, int rows, int columns, List<List<bool>> expectedNextState)
         {
             // Arrange
-            var board = new Board { Rows = rows, Columns = cols, State = initialState };
+            var board = new Board { Rows = rows, Columns = columns, State = initialState };
 
             var expectedNextStateHash = BoardHelper.ComputeStateHash(BoardHelper.ConvertToBinary(expectedNextState));
 
@@ -57,10 +57,10 @@ namespace GameOfLife.API.Tests.HelpersTests
 
         [Theory]
         [MemberData(nameof(NeighborCountData))]
-        public void CountLiveNeighbors_ShouldReturnCorrectCount(List<List<bool>> state, int row, int col, int rows, int cols, int expectedCount)
+        public void CountLiveNeighbors_ShouldReturnCorrectCount(List<List<bool>> state, int row, int col, int rows, int columns, int expectedCount)
         {
             // Act
-            var actualCount = BoardHelper.CountLiveNeighbors(state, row, col, rows, cols);
+            var actualCount = BoardHelper.CountLiveNeighbors(state, row, col, rows, columns);
 
             // Assert
             Assert.Equal(expectedCount, actualCount);
@@ -86,10 +86,10 @@ namespace GameOfLife.API.Tests.HelpersTests
 
         [Theory]
         [MemberData(nameof(BoardAfterIterationsData))]
-        public void GetBoardAfterNIterations_ShouldComputeCorrectFinalState(List<List<bool>> initialState, int rows, int cols, int iterations, List<List<bool>> expectedFinalState)
+        public void GetBoardAfterNIterations_ShouldComputeCorrectFinalState(List<List<bool>> initialState, int rows, int columns, int iterations, List<List<bool>> expectedFinalState)
         {
             // Arrange
-            var board = new Board { Rows = rows, Columns = cols, State = initialState };
+            var board = new Board { Rows = rows, Columns = columns, State = initialState };
 
             var expectedFinalStateHash = BoardHelper.ComputeStateHash(BoardHelper.ConvertToBinary(expectedFinalState));
 
@@ -99,6 +99,22 @@ namespace GameOfLife.API.Tests.HelpersTests
             // Assert
             Assert.Equal(expectedFinalState, finalState);
             Assert.Equal(expectedFinalStateHash, resultStateHash);
+        }
+
+        [Theory]
+        [MemberData(nameof(StableOrFinalIterationData))]
+        public void GetStableOrFinalIteration_ShouldDetectEndCondition(List<List<bool>> initialState, int rows, int columns, int maxIterations, EndReason expectedEndReason, int expectedIterations)
+        {
+            // Arrange
+            var board = new Board { Rows = rows, Columns = columns, State = initialState };
+
+            // Act
+            var (finalState, iterationCount) = BoardHelper.GetStableOrFinalIteration(board, maxIterations, out _, out var endReason);
+
+            // Assert
+            Assert.NotNull(finalState);
+            Assert.Equal(expectedEndReason, endReason);
+            Assert.Equal(expectedIterations, iterationCount);
         }
 
         public static IEnumerable<object[]> BoardStateData()
@@ -178,23 +194,6 @@ namespace GameOfLife.API.Tests.HelpersTests
             };
         }
 
-        private static List<List<bool>> Generate10x10GliderPattern()
-        {
-            return new List<List<bool>>
-            {
-                new() { false, false, false, false, false, false, false, false, false, false },
-                new() { false, false, false, false, false, false, false, false, false, false },
-                new() { false, false, true,  false, false, false, false, false, false, false },
-                new() { false, false, false, true,  false, false, false, false, false, false },
-                new() { false, true,  true,  true,  false, false, false, false, false, false },
-                new() { false, false, false, false, false, false, false, false, false, false },
-                new() { false, false, false, false, false, false, false, false, false, false },
-                new() { false, false, false, false, false, false, false, false, false, false },
-                new() { false, false, false, false, false, false, false, false, false, false },
-                new() { false, false, false, false, false, false, false, false, false, false }
-            };
-        }
-
         public static IEnumerable<object[]> BoardAfterIterationsData()
         {
             List<List<bool>> gliderPattern_10x10 = Generate10x10GliderPattern();
@@ -244,7 +243,56 @@ namespace GameOfLife.API.Tests.HelpersTests
             };
         }
 
-        private static List<List<bool>> GenerateRandomBoard(int rows, int cols, double fillProbability)
+        public static IEnumerable<object[]> StableOrFinalIterationData()
+        {
+            var gliderPattern_10x10 = Generate10x10GliderPattern();
+            var loop_oscillator_4x4 = GenerateOscillatorPattern(4, 4);
+            var loop_pattern_6x6 = GenerateLoopPattern(6, 6);
+            var random_10000x10000 = GenerateRandomBoard(10000, 10000, 0.5);
+
+            yield return new object[]
+            {
+                // Looping board: Detects a loop and stops early
+                loop_oscillator_4x4, 4, 4, 10, EndReason.Loop, 2
+            };
+
+            yield return new object[]
+            {
+                // Looping board: Detects a loop and stops early
+                loop_pattern_6x6, 6, 6, 20, EndReason.Loop, 2
+            };
+
+            yield return new object[]
+            {
+                // 10x10 Glider pattern: Stops at max iterations if no stability or loops
+                gliderPattern_10x10, 10, 10, 50, EndReason.Stable, 23
+            };
+
+            yield return new object[]
+            {
+                // 10000x10000 random board: Should reach max iterations since it's unpredictable
+                random_10000x10000, 10000, 10000, 1000, EndReason.MaxIterationsReached, 1000
+            };
+        }
+
+        private static List<List<bool>> Generate10x10GliderPattern()
+        {
+            return new List<List<bool>>
+            {
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, true,  false, false, false, false, false, false, false },
+                new() { false, false, false, true,  false, false, false, false, false, false },
+                new() { false, true,  true,  true,  false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false },
+                new() { false, false, false, false, false, false, false, false, false, false }
+            };
+        }
+
+        private static List<List<bool>> GenerateRandomBoard(int rows, int columns, double fillProbability)
         {
             var random = new Random();
             var board = new List<List<bool>>();
@@ -252,7 +300,7 @@ namespace GameOfLife.API.Tests.HelpersTests
             for (int i = 0; i < rows; i++)
             {
                 var row = new List<bool>();
-                for (int j = 0; j < cols; j++)
+                for (int j = 0; j < columns; j++)
                 {
                     row.Add(random.NextDouble() < fillProbability);
                 }
@@ -261,14 +309,31 @@ namespace GameOfLife.API.Tests.HelpersTests
             return board;
         }
 
-        private static List<List<bool>> GenerateCheckerboardBoard(int rows, int cols)
+        private static List<List<bool>> GenerateOscillatorPattern(int rows, int columns)
         {
             var board = new List<List<bool>>();
 
             for (int i = 0; i < rows; i++)
             {
                 var row = new List<bool>();
-                for (int j = 0; j < cols; j++)
+                for (int j = 0; j < columns; j++)
+                {
+                    // Simple "Blinker" oscillator: vertical → horizontal flip
+                    row.Add((i == rows / 2) && (j >= columns / 2 - 1 && j <= columns / 2 + 1));
+                }
+                board.Add(row);
+            }
+            return board;
+        }
+
+        private static List<List<bool>> GenerateCheckerboardBoard(int rows, int columns)
+        {
+            var board = new List<List<bool>>();
+
+            for (int i = 0; i < rows; i++)
+            {
+                var row = new List<bool>();
+                for (int j = 0; j < columns; j++)
                 {
                     row.Add((i + j) % 2 is 0);
                 }
@@ -277,9 +342,26 @@ namespace GameOfLife.API.Tests.HelpersTests
             return board;
         }
 
-        private static List<List<bool>> GenerateAllAliveBoard(int rows, int cols)
+        private static List<List<bool>> GenerateLoopPattern(int rows, int columns)
         {
-            return Enumerable.Range(0, rows).Select(_ => Enumerable.Repeat(true, cols).ToList()).ToList();
+            var board = new List<List<bool>>();
+
+            for (int i = 0; i < rows; i++)
+            {
+                var row = new List<bool>();
+                for (int j = 0; j < columns; j++)
+                {
+                    // Small "Pulsar" or Traffic Light Oscillator (changes between 3 states)
+                    row.Add((i == 2 && j == 1) || (i == 2 && j == 2) || (i == 2 && j == 3));
+                }
+                board.Add(row);
+            }
+            return board;
+        }
+
+        private static List<List<bool>> GenerateAllAliveBoard(int rows, int columns)
+        {
+            return Enumerable.Range(0, rows).Select(_ => Enumerable.Repeat(true, columns).ToList()).ToList();
         }
     }
 }
