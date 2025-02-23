@@ -2,7 +2,7 @@
 
 namespace GameOfLife.API.Tests.HelpersTests
 {
-    public class ConfigurationHelpersTests
+    public class ConfigurationHelperTests
     {
         [Fact]
         public void ReadDockerSecretFileAsString_ShouldReturnTrimmedContent()

@@ -1,4 +1,4 @@
-﻿namespace GameOfLife.API.Configurations
+﻿namespace GameOfLife.API.Settings
 {
     public class DockerSecretPaths
     {

@@ -12,18 +12,18 @@ namespace GameOfLife.API.Services
         private readonly ILogger<BoardService> _logger;
         private readonly IBoardReadRepository _readRepository;
         private readonly IBoardWriteRepository _writeRepository;
-        private readonly int _maxAttempts;
+        private readonly int _maxIterations;
 
         public BoardService(
-            IBoardReadRepository readRepository,
-            IBoardWriteRepository writeRepository,
+            ILogger<BoardService> logger,
             IOptions<AppSettings> settings,
-            ILogger<BoardService> logger)
+            IBoardReadRepository readRepository,
+            IBoardWriteRepository writeRepository)
         {
+            _logger = logger;
+            _maxIterations = settings.Value.MaxIterations;
             _readRepository = readRepository;
             _writeRepository = writeRepository;
-            _maxAttempts = settings.Value.MaxAttempts;
-            _logger = logger;
         }
 
         /// <summary>
@@ -41,18 +41,55 @@ namespace GameOfLife.API.Services
         }
 
         /// <summary>
-        /// Retrieves the next tick of an existing board by its ID.
+        /// Retrieves the next iteration of an existing board by its ID.
         /// </summary>
         /// <param name="id">The unique identifier of the board.</param>
-        /// <returns>The board object with its state updated to the next tick.</returns>
-        public async Task<Board?> GetNextTickOfExistingBoardAsync(Guid id)
+        /// <returns>The board object with its state updated to the next iteration.</returns>
+        public async Task<Board?> GetNextIterationOfExistingBoardAsync(Guid id)
         {
             var board = await _readRepository.GetBoardAsync(id);
 
             if (board is null) return null;
-            board.State = BoardHelper.GetNextTick(board, board.Rows, board.Columns, out _);
+
+            board.State = BoardHelper.GetNextIteration(board, out _);
 
             return board;
+        }
+
+        /// <summary>
+        /// Retrieves the state of a board after a specified number of iterations.
+        /// </summary>
+        /// <param name="id">The unique identifier of the board.</param>
+        /// <param name="iterations">The number of iterations to simulate.</param>
+        /// <returns>The board object with its state updated after the specified number of iterations.</returns>
+        public async Task<Board?> GetBoardAfterNIterationsAsync(Guid id, int iterations)
+        {
+            var board = await _readRepository.GetBoardAsync(id);
+
+            if (board is null) return null;
+
+            board.State = BoardHelper.GetBoardAfterNIterations(board, iterations, out _);
+
+            return board;
+        }
+
+        /// <summary>
+        /// Retrieves the stable or final iteration of a board by its ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the board.</param>
+        /// <param name="maxIterations">The maximum number of iterations to simulate.</param>
+        /// <returns>A tuple containing the board object, the number of iterations performed, and the reason for ending the simulation.</returns>
+        public async Task<(Board?, int, EndReason)?> GetStableOrFinalIterationAsync(Guid id, int maxIterations)
+        {
+            var board = await _readRepository.GetBoardAsync(id);
+
+            if (board is null) return null;
+
+            int iterations;
+
+            (board.State, iterations) = BoardHelper.GetStableOrFinalIteration(board, maxIterations, out _, out var endReason);
+
+            return (board, iterations, endReason);
         }
     }
 }
