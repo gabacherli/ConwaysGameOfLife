@@ -102,7 +102,7 @@ Content-Type: application/json
     [false, true, false, true, false],
     [true, false, true, false, true]
   ]
-}
+}` 
 ```
 
 #### **Response**
@@ -186,23 +186,38 @@ GET /api/boards/{id}/finalIteration/{maxIterations}`
   "endReason": "Stable"
 }
 ```
-----------
 
 ## **🚀 Future Improvements**
 
 ✅ **Improve Performance with Parallel Processing**
-
 -   Use **multi-threading** for faster board state calculations.
 
-✅ **Add Caching for Frequent Requests**
 
+✅ **Add Caching for Frequent Requests**
 -   Implement **Redis** to cache frequently requested board states.
 
 ✅ **Introduce a UI or Rendering**
-
 -   Build a **visualization** for the board evolution.
 
-----------
+## **📌 Performance Considerations**
+
+- When running the simulation, the **total number of cell evaluations** determines performance. For a board of size **rows × columns** running for a number of **iterations**, the **total number of operations** is:
+`Operations = iterations × rows × columns`
+
+### 📊 Runtime Estimation in my baseline performance tests: 
+- A **20×20 board (400 cells)** achieved **~62,500 iterations per second**. 
+- Performance scales **inversely with board size**. Using this benchmark, we can estimate the **iterations per second** for any board size as:
+`Iterations/second =~ 25,000,000 / (rows × columns)`
+The **expected runtime** in seconds for a number of **iterations** is:
+`Expected runtime =~ (iterations × rows × columns) / 25,000,000`
+--- 
+### 📊 Example Simulations 
+| **Board Size (rows × columns)** | **Iterations** | **Expected runtime** | 
+|------------------------|-------------------|-----------------------|
+ | **20 × 20 (400 cells)** | **15,000,000** | **~4 minutes** | 
+ | **50 × 50 (2,500 cells)** | **15,000,000** | **~25 minutes** | 
+ | **400 × 400 (160,000 cells)** | **15,000,000** | **~26.7 hours** | 
+ | **1000 × 1000 (1,000,000 cells)** | **15,000,000** | **~6.9 days** | 
 
 ## **🎯 Final Notes**
 
@@ -213,3 +228,9 @@ If you need **troubleshooting help**, check logs with:
 docker logs conwaysgameoflife-api-1
 docker logs conwaysgameoflife-sqlserver-1
 ```
+
+## **🗣️ Shoutouts**
+- [The Coding Train 🧑🏻‍🔬](https://www.youtube.com/watch?v=FWSR_7kZuYg)
+- [Matthew Brown 🤠](https://www.youtube.com/watch?v=0g1PHZdnQcw) - and his website that helped me test small iterations manually https://academo.org/demos/conways-game-of-life/
+- [Wikipedia 🤘🏾](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)
+- [My brain 🧠](http://chat.com/) /s
