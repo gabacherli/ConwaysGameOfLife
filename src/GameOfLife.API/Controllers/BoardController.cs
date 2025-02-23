@@ -113,7 +113,7 @@ namespace GameOfLife.API.Controllers
         /// <param name="maxIterations">The maximum number of iterations to compute.</param>
         /// <returns>The stable or final iteration/state of a board.</returns>
         /// <response code="200">Returns the stable or final iteration/state of an existing board.</response>
-        /// <response code="400">Invalid input.</response>
+        /// <response code="400">Invalid input or reached the maximum interactions allowed.</response>
         /// <response code="404">Board not found.</response>
         [HttpGet("{id}/finalIteration/{maxIterations}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -138,8 +138,13 @@ namespace GameOfLife.API.Controllers
             {
                 Board = result.Value.Item1!,
                 Iterations = result.Value.Item2,
-                EndReason = result.Value.Item3
+                EndReason = result.Value.Item3.ToString()
             };
+
+            if (response.EndReason == EndReason.MaxIterationsReached.ToString())
+            {
+                return BadRequest(response);
+            }
 
             return Ok(response);
         }

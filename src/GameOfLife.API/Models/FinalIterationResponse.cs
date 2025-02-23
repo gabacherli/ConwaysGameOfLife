@@ -4,6 +4,6 @@
     {
         public required Board Board { get; set; }
         public int Iterations { get; set; }
-        public EndReason EndReason { get; set; }
+        public required string EndReason { get; set; }
     }
 }

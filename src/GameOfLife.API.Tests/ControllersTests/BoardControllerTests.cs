@@ -247,7 +247,7 @@ namespace GameOfLife.API.Tests.ControllersTests
 
             Assert.Equal(board, response.Board);
             Assert.Equal(expectedIterations, response.Iterations);
-            Assert.Equal(endReason, response.EndReason);
+            Assert.Equal(endReason.ToString(), response.EndReason);
         }
 
         public static IEnumerable<object[]> GetInvalidBoardTestCases()
