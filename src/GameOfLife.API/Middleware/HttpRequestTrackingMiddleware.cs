@@ -41,11 +41,11 @@ namespace GameOfLife.API.Middleware
             }
             finally
             {
-                LogResponseAsync(context, traceId);
+                LogResponse(context, traceId);
             }
         }
 
-        private void LogResponseAsync(HttpContext context, string traceId)
+        private void LogResponse(HttpContext context, string traceId)
         {
             var responseStatus = context.Response.StatusCode;
             var requestPath = context.Request.Path;
