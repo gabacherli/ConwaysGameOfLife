@@ -1,4 +1,5 @@
 using GameOfLife.API.Extensions;
+using GameOfLife.API.Middleware;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<HttpRequestTrackingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

@@ -1,3 +1,4 @@
+using GameOfLife.API.Middleware.Providers;
 using GameOfLife.API.Models;
 using GameOfLife.API.Services;
 using GameOfLife.API.Settings;
@@ -12,15 +13,18 @@ namespace GameOfLife.API.Controllers
     public class BoardController : ControllerBase
     {
         private readonly ILogger<BoardController> _logger;
+        private readonly TraceIdProvider _traceIdProvider;
         private readonly IBoardService _boardService;
         private readonly int? _maxIterations;
 
         public BoardController(
             ILogger<BoardController> logger,
+            TraceIdProvider traceIdProvider,
             IOptions<AppSettings> settings,
             IBoardService boardService)
         {
             _logger = logger;
+            _traceIdProvider = traceIdProvider;
             _boardService = boardService;
             _maxIterations = settings?.Value?.MaxIterations;
         }
@@ -37,6 +41,9 @@ namespace GameOfLife.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UploadBoardAsync([FromBody] Board board)
         {
+            var traceId = _traceIdProvider.GetTraceId();
+            _logger.LogDebug("[{TraceId}] {Method}: Received request to insert board.", traceId, nameof(UploadBoardAsync));
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -44,6 +51,7 @@ namespace GameOfLife.API.Controllers
 
             var id = await _boardService.InsertBoardAsync(board);
 
+            _logger.LogInformation("[{TraceId}] {Method}: Board inserted successfully with ID {BoardId}.", traceId, nameof(UploadBoardAsync), id);
             return Ok(id);
         }
 
@@ -60,6 +68,9 @@ namespace GameOfLife.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetNextIterationOfExistingBoardAsync(Guid id)
         {
+            var traceId = _traceIdProvider.GetTraceId();
+            _logger.LogDebug("[{TraceId}] {Method}: Fetching board ID {BoardId}.", traceId, nameof(GetNextIterationOfExistingBoardAsync), id);
+
             if (id == Guid.Empty)
             {
                 return BadRequest(new { Response = $"{nameof(id)} must be different than the default value." });
@@ -72,6 +83,7 @@ namespace GameOfLife.API.Controllers
                 return NotFound(new { Response = "Board not found." });
             }
 
+            _logger.LogInformation("[{TraceId}] {Method}: Successfully computed next iteration for Board ID {BoardId}.", traceId, nameof(GetNextIterationOfExistingBoardAsync), id);
             return Ok(result);
         }
 
@@ -90,6 +102,9 @@ namespace GameOfLife.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBoardAfterNIterationsAsync(Guid id, [Required, Range(1, int.MaxValue)] int iterations)
         {
+            var traceId = _traceIdProvider.GetTraceId();
+            _logger.LogDebug("[{TraceId}] {Method}: Fetching board {BoardId} for {Iterations} iterations.", traceId, nameof(GetBoardAfterNIterationsAsync), id, iterations);
+
             // Limiting to environment config value to prevent abuse
             if (iterations <= 0 || iterations > _maxIterations || id == default)
             {
@@ -103,6 +118,7 @@ namespace GameOfLife.API.Controllers
                 return NotFound(new { Response = "Board not found." });
             }
 
+            _logger.LogInformation("[{TraceId}] {Method}: Successfully computed {Iterations} iterations for Board ID {BoardId}.", traceId, nameof(GetBoardAfterNIterationsAsync), iterations, id);
             return Ok(result);
         }
 
@@ -121,6 +137,9 @@ namespace GameOfLife.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetStableOrFinalIterationAsync(Guid id, [Range(1, int.MaxValue)] int maxIterations = 1500)
         {
+            var traceId = _traceIdProvider.GetTraceId();
+            _logger.LogDebug("[{TraceId}] {Method}: Fetching board {BoardId} for max {MaxIterations} iterations.", traceId, nameof(GetStableOrFinalIterationAsync), id, maxIterations);
+
             // Limiting to environment config value to prevent abuse
             if (maxIterations <= 0 || maxIterations > _maxIterations || id == default)
             {
@@ -146,6 +165,7 @@ namespace GameOfLife.API.Controllers
                 return BadRequest(response);
             }
 
+            _logger.LogInformation("[{TraceId}] {Method}: Computed stable iteration for Board ID {BoardId}. End Reason: {EndReason}", traceId, nameof(GetStableOrFinalIterationAsync), id, response.EndReason);
             return Ok(response);
         }
     }
