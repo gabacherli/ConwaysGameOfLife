@@ -3,7 +3,6 @@ using GameOfLife.API.Middleware.Providers;
 using GameOfLife.API.Models;
 using GameOfLife.API.Repositories.Read;
 using GameOfLife.API.Repositories.Write;
-using System.Diagnostics;
 
 namespace GameOfLife.API.Services
 {
@@ -75,7 +74,7 @@ namespace GameOfLife.API.Services
             _logger.LogDebug("[{TraceId}] {Method}: Computing {Iterations} iterations for Board ID {BoardId}.", traceId, nameof(GetBoardAfterNIterationsAsync), iterations, id);
 
             board.State = BoardHelper.GetBoardAfterNIterations(board, iterations, out _);
-            
+
             _logger.LogInformation("[{TraceId}] {Method}: Computed {Iterations} iterations for Board ID {BoardId}.", traceId, nameof(GetBoardAfterNIterationsAsync), iterations, id);
 
             return board;
@@ -99,7 +98,7 @@ namespace GameOfLife.API.Services
             _logger.LogDebug("[{TraceId}] {Method}: Computing stable iteration for Board ID {BoardId}.", traceId, nameof(GetStableOrFinalIterationAsync), id);
 
             (board.State, iterations) = BoardHelper.GetStableOrFinalIteration(board, maxIterations, out _, out var endReason);
-            
+
             _logger.LogInformation("[{TraceId}] {Method}: Computed stable iteration for Board ID {BoardId}. End Reason: {EndReason}", traceId, nameof(GetStableOrFinalIterationAsync), id, endReason);
 
             return (board, iterations, endReason);
