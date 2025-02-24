@@ -37,7 +37,7 @@ To securely store database credentials, create Docker secrets in the **project r
 mkdir -p secrets
 Set-Content -Path secrets/dev_board_sa_password.txt -Value "YourStrong!Passw0rd" -NoNewline
 Set-Content -Path secrets/dev_board_rw_db_connection_string.txt -Value "Server=sqlserver;Database=GameOfLife;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true" -NoNewline
-Set-Content -Path secrets/dev_board_ro_connection_string.txt -Value "Server=sqlserver;Database=GameOfLife;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true" -NoNewline` 
+Set-Content -Path secrets/dev_board_ro_connection_string.txt -Value "Server=sqlserver;Database=GameOfLife;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true" -NoNewline 
 ```
 🔹 **Replace `"YourStrong!Passw0rd"` with your preferred password.**  
 🔹 These secrets are **mounted in Docker** instead of being stored in configuration files publicly.
@@ -50,7 +50,7 @@ Ensure **Docker Desktop is running** before proceeding.
 -   **Linux:** Run:
     
 ```sh    
-sudo systemctl start docker`
+sudo systemctl start docker
 ```
 
 ### **3️⃣ Start the API & Database Containers**
@@ -58,7 +58,7 @@ sudo systemctl start docker`
 To build and start the API and database, run:
 
 ```sh
-docker-compose up --build` 
+docker-compose up --build 
 ```
 🔹 This will:
 
@@ -90,7 +90,7 @@ If **GameOfLife** is listed, the database is correctly initialized.
 Once the containers are running, open **Swagger UI**:
 
 ```sh
-http://localhost:5000/swagger/index.html` 
+http://localhost:5000/swagger/index.html
 ```
 ----------
 
@@ -128,7 +128,7 @@ Content-Type: application/json
 #### **Request**
 
 ```http
-GET /api/boards/{id}/next` 
+GET /api/boards/{id}/next 
 ```
 
 #### **Response**
@@ -153,7 +153,7 @@ GET /api/boards/{id}/next`
 #### **Request**
 
 ```http
-GET /api/boards/{id}/next/{iterations}` 
+GET /api/boards/{id}/next/{iterations} 
 ```
 
 #### **Response**
@@ -177,7 +177,7 @@ GET /api/boards/{id}/next/{iterations}`
 #### **Request**
 
 ```http
-GET /api/boards/{id}/finalIteration/{maxIterations}` 
+GET /api/boards/{id}/finalIteration/{maxIterations} 
 ```
 
 #### **Response**
