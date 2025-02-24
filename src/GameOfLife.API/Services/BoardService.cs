@@ -1,27 +1,27 @@
 ﻿using GameOfLife.API.Helpers;
+using GameOfLife.API.Middleware.Providers;
 using GameOfLife.API.Models;
 using GameOfLife.API.Repositories.Read;
 using GameOfLife.API.Repositories.Write;
-using GameOfLife.API.Settings;
-using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace GameOfLife.API.Services
 {
     public class BoardService : IBoardService
     {
         private readonly ILogger<BoardService> _logger;
+        private readonly TraceIdProvider _traceIdProvider;
         private readonly IBoardReadRepository _readRepository;
         private readonly IBoardWriteRepository _writeRepository;
-        private readonly int _maxIterations;
 
         public BoardService(
             ILogger<BoardService> logger,
-            IOptions<AppSettings> settings,
+            TraceIdProvider traceIdProvider,
             IBoardReadRepository readRepository,
             IBoardWriteRepository writeRepository)
         {
             _logger = logger;
-            _maxIterations = settings.Value.MaxIterations;
+            _traceIdProvider = traceIdProvider;
             _readRepository = readRepository;
             _writeRepository = writeRepository;
         }
@@ -34,8 +34,6 @@ namespace GameOfLife.API.Services
         public async Task<Guid> InsertBoardAsync(Board board)
         {
             await _writeRepository.InsertBoardAsync(board);
-
-            _logger.LogInformation("Board inserted: {Id}", board.Id);
 
             return board.Id;
         }
@@ -51,7 +49,12 @@ namespace GameOfLife.API.Services
 
             if (board is null) return null;
 
+            var traceId = _traceIdProvider.GetTraceId();
+            _logger.LogDebug("[{TraceId}] {Method}: Computing next iteration for Board ID {BoardId}.", traceId, nameof(GetNextIterationOfExistingBoardAsync), id);
+
             board.State = BoardHelper.GetNextIteration(board, out _);
+
+            _logger.LogInformation("[{TraceId}] {Method}: Computed next iteration for Board ID {BoardId}.", traceId, nameof(GetNextIterationOfExistingBoardAsync), id);
 
             return board;
         }
@@ -68,7 +71,12 @@ namespace GameOfLife.API.Services
 
             if (board is null) return null;
 
+            var traceId = _traceIdProvider.GetTraceId();
+            _logger.LogDebug("[{TraceId}] {Method}: Computing {Iterations} iterations for Board ID {BoardId}.", traceId, nameof(GetBoardAfterNIterationsAsync), iterations, id);
+
             board.State = BoardHelper.GetBoardAfterNIterations(board, iterations, out _);
+            
+            _logger.LogInformation("[{TraceId}] {Method}: Computed {Iterations} iterations for Board ID {BoardId}.", traceId, nameof(GetBoardAfterNIterationsAsync), iterations, id);
 
             return board;
         }
@@ -87,7 +95,12 @@ namespace GameOfLife.API.Services
 
             int iterations;
 
+            var traceId = _traceIdProvider.GetTraceId();
+            _logger.LogDebug("[{TraceId}] {Method}: Computing stable iteration for Board ID {BoardId}.", traceId, nameof(GetStableOrFinalIterationAsync), id);
+
             (board.State, iterations) = BoardHelper.GetStableOrFinalIteration(board, maxIterations, out _, out var endReason);
+            
+            _logger.LogInformation("[{TraceId}] {Method}: Computed stable iteration for Board ID {BoardId}. End Reason: {EndReason}", traceId, nameof(GetStableOrFinalIterationAsync), id, endReason);
 
             return (board, iterations, endReason);
         }
