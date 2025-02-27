@@ -1,8 +1,10 @@
 ﻿using GameOfLife.API.Controllers;
 using GameOfLife.API.Helpers;
+using GameOfLife.API.Middleware.Providers;
 using GameOfLife.API.Models;
 using GameOfLife.API.Services;
 using GameOfLife.API.Settings;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,6 +17,8 @@ namespace GameOfLife.API.Tests.ControllersTests
     public class BoardControllerTests
     {
         private readonly ILogger<BoardController> _logger = Substitute.For<ILogger<BoardController>>();
+        private readonly TraceIdProvider _traceIdProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         private readonly IBoardService _boardService = Substitute.For<IBoardService>();
         private readonly IOptions<AppSettings> _appSettings = Substitute.For<IOptions<AppSettings>>();
         private readonly JsonSerializerSettings _jsonSerializerSettings;
@@ -22,11 +26,14 @@ namespace GameOfLife.API.Tests.ControllersTests
 
         public BoardControllerTests()
         {
+            _httpContextAccessor.HttpContext = new DefaultHttpContext();
+            _httpContextAccessor.HttpContext.Items["TraceId"] = Guid.NewGuid().ToString();
+            _traceIdProvider = new TraceIdProvider(_httpContextAccessor);
             _jsonSerializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver { IgnoreSerializableAttribute = false }
             };
-            _controller = new BoardController(_logger, _appSettings, _boardService);
+            _controller = new BoardController(_logger, _traceIdProvider, _appSettings, _boardService);
         }
 
         [Fact]
@@ -151,7 +158,7 @@ namespace GameOfLife.API.Tests.ControllersTests
             // Arrange
             _appSettings.Value.Returns(new AppSettings { MaxIterations = maxIterations });
 
-            _controller = new BoardController(_logger, _appSettings, _boardService);
+            _controller = new BoardController(_logger, _traceIdProvider, _appSettings, _boardService);
 
             // Act
             var result = await _controller.GetBoardAfterNIterationsAsync(id, iterations);
@@ -186,7 +193,7 @@ namespace GameOfLife.API.Tests.ControllersTests
             var configuredMaxIterations = 1500;
             _appSettings.Value.Returns(new AppSettings { MaxIterations = configuredMaxIterations });
 
-            _controller = new BoardController(_logger, _appSettings, _boardService);
+            _controller = new BoardController(_logger, _traceIdProvider, _appSettings, _boardService);
 
             var expectedErrorMessage = $"{nameof(id)} must be different than the default value and {nameof(maxIterations)} must be between 1 and {_appSettings.Value.MaxIterations}.";
 
