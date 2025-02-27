@@ -9,12 +9,6 @@ namespace GameOfLife.API.Middleware
     {
         private readonly RequestDelegate _requestDelegate;
         private readonly ILogger<HttpRequestTrackingMiddleware> _logger;
-        private const string DefaultErrorMessage = "An unexpected error occurred.";
-        private const string ArgumentExceptionMessage = "Invalid input provided.";
-        private const string FileNotFoundExceptionMessage = "File not found.";
-        private const string InvalidOperationExceptionMessage = "Operation could not be completed.";
-        private const string SqlExceptionUnavailableMessage = "Database is unavailable.";
-        private const string SqlExceptionGenericMessage = "An error occurred while processing the request.";
 
         public HttpRequestTrackingMiddleware(RequestDelegate requestDelegate, ILogger<HttpRequestTrackingMiddleware> logger)
         {
@@ -76,7 +70,7 @@ namespace GameOfLife.API.Middleware
             var customException = new CustomException
             {
                 TraceId = traceId,
-                Message = DefaultErrorMessage,
+                Message = ErrorMessageConstants.DefaultErrorMessage,
                 Error = exception.Message
             };
 
@@ -84,29 +78,29 @@ namespace GameOfLife.API.Middleware
             {
                 case ArgumentException ex:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    customException = GetCustomException(traceId, ex.GetType().Name, ArgumentExceptionMessage, ex.Message);
+                    customException = GetCustomException(traceId, ex.GetType().Name, ErrorMessageConstants.ArgumentExceptionMessage, ex.Message);
                     break;
 
                 case FileNotFoundException ex:
                     response.StatusCode = (int)HttpStatusCode.NotFound;
-                    customException = GetCustomException(traceId, ex.GetType().Name, FileNotFoundExceptionMessage, ex.Message);
+                    customException = GetCustomException(traceId, ex.GetType().Name, ErrorMessageConstants.FileNotFoundExceptionMessage, ex.Message);
                     break;
 
                 case InvalidOperationException ex:
                     response.StatusCode = (int)HttpStatusCode.Conflict;
-                    customException = GetCustomException(traceId, ex.GetType().Name, InvalidOperationExceptionMessage, ex.Message);
+                    customException = GetCustomException(traceId, ex.GetType().Name, ErrorMessageConstants.InvalidOperationExceptionMessage, ex.Message);
                     break;
 
                 case SqlException ex when
                     ex.Message.Contains("timeout", StringComparison.OrdinalIgnoreCase)
                     || ex.Message.Contains("error occurred while establishing a connection", StringComparison.OrdinalIgnoreCase):
                     response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
-                    customException = GetCustomException(traceId, ex.GetType().Name, SqlExceptionUnavailableMessage, ex.Message);
+                    customException = GetCustomException(traceId, ex.GetType().Name, ErrorMessageConstants.SqlExceptionUnavailableMessage, ex.Message);
                     break;
 
                 case SqlException ex:
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    customException = GetCustomException(traceId, ex.GetType().Name, SqlExceptionGenericMessage, ex.Message);
+                    customException = GetCustomException(traceId, ex.GetType().Name, ErrorMessageConstants.SqlExceptionGenericMessage, ex.Message);
                     break;
 
                 default:
